@@ -51,7 +51,47 @@ def show_mean(data):
     st.markdown(f"3. Divide: {fmt(total)} ÷ {len(data)} = **{fmt(calculate_mean(data))}**")
     st.metric("Mean", fmt(calculate_mean(data)))
 
-PAGES = {"Mean": show_mean, "Median": None, "Mode": None}  # add show_median / show_mode later
+def show_median(data):
+    st.write("The **median** is the middle value after sorting. "
+             "Half the data is below it, half above.")
+    st.latex(r"\text{median} = \begin{cases} x_{\left(\frac{n+1}{2}\right)} & n \text{ odd} \\[4pt]"
+             r"\dfrac{x_{\left(\frac{n}{2}\right)} + x_{\left(\frac{n}{2}+1\right)}}{2} & n \text{ even}"
+             r"\end{cases}")
+
+    st.subheader("Step by step")
+    s, n = sorted(data), len(data)
+    st.markdown(f"1. Sort: {', '.join(fmt(v) for v in s)}")
+    if n % 2 == 1:
+        pos = (n + 1) // 2
+        st.markdown(f"2. n = {n} is **odd** → take position {pos}")
+        st.markdown(f"3. Median = **{fmt(s[pos - 1])}**")
+    else:
+        a, b = s[n // 2 - 1], s[n // 2]
+        st.markdown(f"2. n = {n} is **even** → average positions {n // 2} and {n // 2 + 1}")
+        st.markdown(f"3. ({fmt(a)} + {fmt(b)}) ÷ 2 = **{fmt(calculate_median(data))}**")
+    col1, col2 = st.columns(2)
+    col1.metric("Median", fmt(calculate_median(data)))
+    col2.metric("Mean (for comparison)", fmt(calculate_mean(data)))
+
+def show_mode(data):
+    st.write("The **mode** is the value that appears most often. "
+             "Data can have one mode, several modes, or no mode.")
+    st.latex(r"\text{mode} = \text{value with the highest frequency}")
+
+    st.subheader("Step by step")
+    st.markdown("1. Count how often each value appears:")
+    freq = frequencies(data)
+    st.table({"value": [fmt(v) for v in freq], "count": list(freq.values())})
+    modes = calculate_mode(data)
+    if not modes:
+        st.markdown("2. Every value appears once → **no mode**")
+        st.metric("Mode", "none")
+    else:
+        st.markdown(f"2. Highest count = {max(freq.values())} → mode = "
+                    f"**{', '.join(fmt(m) for m in modes)}**")
+        st.metric("Mode", ", ".join(fmt(m) for m in modes))
+
+PAGES = {"Mean": show_mean, "Median": show_median, "Mode": show_mode}  # add show_median / show_mode later
 
 
 # ------------------------------------------------------------------
