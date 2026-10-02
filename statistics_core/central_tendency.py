@@ -32,3 +32,9 @@ def calculate_mode(data):
     if counts.max() == 1:
         return []
     return [float(v) for v in values[counts == counts.max()]]
+
+
+def frequencies(data):
+    """{value: count} sorted by value. Used by the mode page and mode animation."""
+    values, counts = np.unique(data, return_counts=True)
+    return {float(v): int(c) for v, c in zip(values, counts)}
