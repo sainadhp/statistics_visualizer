@@ -1,0 +1,4 @@
+# Install all with:  pip install -r requirements.txt
+manim==0.21.0      # animation engine (also needs MiKTeX/LaTeX installed on your computer)
+streamlit>=1.37    # web dashboard (1.37+ supports autoplay for videos)
+numpy              # calculations
