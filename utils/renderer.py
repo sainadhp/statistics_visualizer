@@ -19,16 +19,17 @@ _lock = threading.Lock()        # Manim settings are global -> render one video 
 QUALITIES = {"Low (fast)": "low_quality", "Medium": "medium_quality", "High (slow)": "high_quality"}
 
 
-def video_path(scene_cls, data, quality):
-    """Build a unique file name, e.g. generated/MeanScene_low_quality_3f9a1c2b.mp4"""
-    key = ",".join(str(float(v)) for v in data)
+def video_path(scene_cls, data, quality, params=None):
+    """Build a unique file name, e.g. generated/MeanScene_low_quality_3f9a1c2b.mp4
+    The hash includes the data AND the options (params), e.g. population vs sample."""
+    key = ",".join(str(float(v)) for v in data) + "|" + str(sorted((params or {}).items()))
     short_hash = hashlib.md5(key.encode()).hexdigest()[:8]
     return GENERATED_DIR / f"{scene_cls.__name__}_{quality}_{short_hash}.mp4"
 
 
-def render_scene(scene_cls, data, quality="low_quality"):
-    """Return the path of the MP4 for this scene + data (renders it only if missing)."""
-    target = video_path(scene_cls, data, quality)
+def render_scene(scene_cls, data, quality="low_quality", params=None):
+    """Return the path of the MP4 for this scene + data + params (renders only if missing)."""
+    target = video_path(scene_cls, data, quality, params)
     if target.exists():
         return target                                # already made earlier -> reuse
 
@@ -42,7 +43,7 @@ def render_scene(scene_cls, data, quality="low_quality"):
             "progress_bar": "none",
         }
         with tempconfig(settings):
-            scene = scene_cls(data=data)
+            scene = scene_cls(data=data, params=params)
             scene.render()
             shutil.copy(scene.renderer.file_writer.movie_file_path, target)
     return target

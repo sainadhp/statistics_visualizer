@@ -30,6 +30,12 @@ class DataScene(Scene):
     Usage:  MeanScene(data=[1, 2, 3])   or   MeanScene()  (uses DEFAULT_DATA)
     """
 
-    def __init__(self, data=None, **kwargs):
+    def __init__(self, data=None, params=None, **kwargs):
         self.data = [float(x) for x in (data if data is not None else DEFAULT_DATA)]
+        self.params = dict(params or {})
         super().__init__(**kwargs)
+
+    @property
+    def ddof(self):
+        """0 = population (÷ n), 1 = sample (÷ n-1). Default: population."""
+        return int(self.params.get("ddof", 0))
